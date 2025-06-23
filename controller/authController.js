@@ -3,7 +3,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 const register = async (req, res) => {
-  const {username, email, password } = req.body;
+  const { username, email, password } = req.body;
 
   try {
     const existingUser = await Auth.findOne({ email });
@@ -13,7 +13,7 @@ const register = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashed = await bcrypt.hash(password, salt);
 
-    const newUser = new Auth({username, email, password: hashed });
+    const newUser = new Auth({ username, email, password: hashed });
     await newUser.save();
 
     res.status(201).json({ msg: "User register successfully!!!" });
@@ -24,6 +24,10 @@ const register = async (req, res) => {
 
 const login = async (req, res) => {
   const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({ message: "Invalid Credentials" });
+  }
 
   try {
     const user = await Auth.findOne({ email });
